@@ -1,0 +1,13 @@
+xlwings
+openpyxl
+numpy
+xlrd
+statsmodels
+scikit-learn
+QtPy
+PyQt5
+PyQt5-sip
+matplotlib
+exampleGUI
+exampleplots
+exampleReadFromExcel
