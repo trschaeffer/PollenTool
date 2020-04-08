@@ -18,6 +18,7 @@ class pollenCategories(QDialog):
         self.newCategories=newCategories
         self.items=[]
         self.listed=QListWidget()
+        self.removedCategories=[]
         self.initUI()
         
         
@@ -32,18 +33,22 @@ class pollenCategories(QDialog):
         hbox = QHBoxLayout()
         hbox.addStretch(1)
         hbox.addWidget(okButton)
-        
-        
+        bannedWord='total pollen/day'
+          
         
         vbox=QVBoxLayout()
         
         
-        
+        print(self.newCategories)
         for i in range(len(self.newCategories)):
+            
+                
             
             self.newCategories[i]=self.newCategories[i].lower().split('(p')
             self.items.append(QListWidgetItem(self.newCategories[i][0], self.listed))
+            
             self.items[i].setFlags(self.items[i].flags() | Qt.ItemIsUserCheckable)
+            
             if len(self.newCategories[i])>1:
                 self.items[i].setCheckState(Qt.Checked)
             else: 
@@ -64,7 +69,11 @@ class pollenCategories(QDialog):
             for i in range(self.listed.count()):
                 
                 if(self.items[i].checkState()==2):
-                    self.newCategories[i]=self.newCategories[i][0]+'(p)'
+                    minlen=min(len(bannedWord),len(self.newCategories[i][0]))
+                    if bannedWord[0:minlen]!=self.newCategories[i][0][0:minlen].lower():
+                        self.newCategories[i]=self.newCategories[i][0]+'(p)'
+                    else:
+                        self.newCategories[i]=self.newCategories[i][0]
                 else:
                     self.newCategories[i]=self.newCategories[i][0]
             self.accept()
@@ -76,7 +85,11 @@ class pollenCategories(QDialog):
         for i in range(self.listed.count()):
                 
             if(self.items[i].checkState()==2):
-                self.newCategories[i]=self.newCategories[i][0]+'(p)'
+                minlen=min(len(bannedWord),len(self.newCategories[i][0]))
+                if bannedWord[0:minlen]!=self.newCategories[i][0][0:minlen].lower():
+                    self.newCategories[i]=self.newCategories[i][0]+'(p)'
+                else:
+                    self.newCategories[i]=self.newCategories[i][0]
             else:
                 self.newCategories[i]=self.newCategories[i][0]
         print("dialog closed")
@@ -93,4 +106,4 @@ def main(newCategories):
     
     
 if __name__ == '__main__':
-    main(['food(p)','fuel'])
+    main(['fOod(p)','fuel','total poLLen(p)','hello','test'])

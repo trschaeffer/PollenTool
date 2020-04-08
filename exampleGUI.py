@@ -168,7 +168,8 @@ class tabs(QTabWidget):
             ex.show()
             if(ex.exec_()):
                 RFE.rewriteCategories(ex.newCategories,'master.xlsx')
-                    
+            new_data.setText("Categories updated")
+            
         def load():
             self.data=RFE.loadData(self.masterFileName)
             if self.data[0] != []:
