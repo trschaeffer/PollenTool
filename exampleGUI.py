@@ -34,6 +34,7 @@ from datetime import date
 import exampleReadFromExcel as RFE
 import exampleplots as explots
 import spearmanExample as sp
+from pollenCategories import pollenCategories
 #import gmail
 
 
@@ -103,7 +104,7 @@ class tabs(QTabWidget):
         
         #Create buttons to publish data
         sum_btn = QPushButton('Calculate Total Pollen/day')
-        polleninfo_btn = QPushButton('Publish Data to polleninfo.org')
+        polleninfo_btn = QPushButton('View/edit Pollen categories')
         hbox3 = QHBoxLayout()
         hbox3.addWidget(sum_btn)
         hbox3.addWidget(polleninfo_btn)
@@ -161,7 +162,13 @@ class tabs(QTabWidget):
                 x.clear()
                 for y in categories:
                     x.addItem(y)
-        
+        def setPollenCategories():
+            categories=RFE.loadDataWithP("master.xlsx")[0]
+            ex = pollenCategories(categories)
+            ex.show()
+            if(ex.exec_()):
+                RFE.rewriteCategories(ex.newCategories,'master.xlsx')
+                    
         def load():
             self.data=RFE.loadData(self.masterFileName)
             if self.data[0] != []:
@@ -204,7 +211,7 @@ class tabs(QTabWidget):
         browse_btn.clicked.connect(openFileNameDialog)
         load_btn.clicked.connect(load)
         add_btn.clicked.connect(add_datapoint)
-        polleninfo_btn.clicked.connect(send_email)
+        polleninfo_btn.clicked.connect(setPollenCategories)
         sum_btn.clicked.connect(sum_pollen)
         
         self.setTabText(0, "Data Entry") #Title the tab

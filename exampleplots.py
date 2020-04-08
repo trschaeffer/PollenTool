@@ -120,7 +120,8 @@ def boxplot(raw_arr,raw_days,name,regressions,axies,future):
     fig.autofmt_xdate() 
     #print(legend)
     #print(name)
-    ax.legend(legend,newName)
+    loc='best'
+    
     if(left!=''):
         ax.set_ylabel(left)   #set the axis label
    
@@ -133,6 +134,7 @@ def boxplot(raw_arr,raw_days,name,regressions,axies,future):
     ax.set_ylabel(left)   #set the axis label
     ax2.set_ylabel(right)  #set the axis label
     plt.show()
+    ax.legend(legend,newName, loc=loc)
         #made to plot two lines on the same graph
     
 def arrayvstime2(raw_arr,raw_days,names,regressions,axies,future):

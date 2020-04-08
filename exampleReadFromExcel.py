@@ -278,6 +278,10 @@ def loadDataWithP(fileName):
       categories,data,dates=[[],[],[]]  
     
     return (categories,data,dates)
+def rewriteCategories(categories,fileName):
+    data=loadDataWithP(fileName)
+    
+    toNewSpreadSheet(categories,data[1],data[2],fileName)
 #merges new dataset into the main spreadsheet
 #takes in dataset,saves file
 #could be modified to return merged data set if needed
