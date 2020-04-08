@@ -276,7 +276,7 @@ def loadDataWithP(fileName):
         categories,data,dates=toList(ws1, 1,True)
     except FileNotFoundError:
       categories,data,dates=[[],[],[]]  
-    
+      
     return (categories,data,dates)
 def rewriteCategories(categories,fileName):
     data=loadDataWithP(fileName)
@@ -308,8 +308,10 @@ def toMainSpreadSheet(categories,datas,dates,filename):
             if(minlen<4):
                 minlen=4
             if categories[i][0:minlen].lower()==mainC[j].split('(p')[0][0:minlen].lower():
-                
-                mainData[j],updatedDataIndex=mergeArray(datas[i],mainData[j])
+                if categories[i][0:minlen].lower()=='total pollen':
+                    mainData[j],updatedDataIndex=datas[i],[]
+                else:
+                    mainData[j],updatedDataIndex=mergeArray(datas[i],mainData[j])
                 mergeReport+="\nMerging data in category "+categories[i]+" into "+mainC[j]
                 
                 for k in range(0,len(updatedDataIndex)):
@@ -390,6 +392,9 @@ def calcTotalPollen(filename):
     dataToSum=[]
     
     categories,data,dates=loadDataWithP(filename)
+    if len(categories)==0:
+        
+        raise FileNotFoundError
     sums=[[0]*len(dates)]
     pollenCats=0
     for i in range(len(categories)):

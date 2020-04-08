@@ -163,13 +163,24 @@ class tabs(QTabWidget):
                 for y in categories:
                     x.addItem(y)
         def setPollenCategories():
-            categories=RFE.loadDataWithP("master.xlsx")[0]
-            ex = pollenCategories(categories)
-            ex.show()
-            if(ex.exec_()):
-                RFE.rewriteCategories(ex.newCategories,'master.xlsx')
-            new_data.setText("Categories updated")
+           
+                categories=RFE.loadDataWithP("master.xlsx")[0]
+                try:
+                    self.data[0]==[]
+                    1/len(categories)
+                except:
+                    self.throwError('Master file has not been loaded. Click "load master" or "browse files" to load master file')
+                
+                    
+                
+                else:
+                    ex = pollenCategories(categories)
+                    ex.show()
+                    if(ex.exec_()):
+                        RFE.rewriteCategories(ex.newCategories,'master.xlsx')
+                    new_data.setText("Categories updated")
             
+                
         def load():
             self.data=RFE.loadData(self.masterFileName)
             if self.data[0] != []:
@@ -180,9 +191,12 @@ class tabs(QTabWidget):
             
             
         def sum_pollen():
-            report=RFE.calcTotalPollen('master.xlsx')
-            new_data.setText(report)
-            updateCategories()
+            try:
+                report=RFE.calcTotalPollen('master.xlsx')
+                new_data.setText(report)
+                updateCategories()
+            except:
+                self.throwError('Master file has not been loaded. Click "load master" or "browse files" to load master file')
 
 
         def send_email():

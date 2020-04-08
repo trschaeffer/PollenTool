@@ -19,6 +19,7 @@ class pollenCategories(QDialog):
         self.items=[]
         self.listed=QListWidget()
         self.removedCategories=[]
+        self.bannedWord='total pollen/day'
         self.initUI()
         
         
@@ -33,13 +34,13 @@ class pollenCategories(QDialog):
         hbox = QHBoxLayout()
         hbox.addStretch(1)
         hbox.addWidget(okButton)
-        bannedWord='total pollen/day'
+        
           
         
         vbox=QVBoxLayout()
         
         
-        print(self.newCategories)
+        
         for i in range(len(self.newCategories)):
             
                 
@@ -69,8 +70,8 @@ class pollenCategories(QDialog):
             for i in range(self.listed.count()):
                 
                 if(self.items[i].checkState()==2):
-                    minlen=min(len(bannedWord),len(self.newCategories[i][0]))
-                    if bannedWord[0:minlen]!=self.newCategories[i][0][0:minlen].lower():
+                    minlen=min(len(self.bannedWord),len(self.newCategories[i][0]))
+                    if self.bannedWord[0:minlen]!=self.newCategories[i][0][0:minlen].lower():
                         self.newCategories[i]=self.newCategories[i][0]+'(p)'
                     else:
                         self.newCategories[i]=self.newCategories[i][0]
@@ -85,8 +86,8 @@ class pollenCategories(QDialog):
         for i in range(self.listed.count()):
                 
             if(self.items[i].checkState()==2):
-                minlen=min(len(bannedWord),len(self.newCategories[i][0]))
-                if bannedWord[0:minlen]!=self.newCategories[i][0][0:minlen].lower():
+                minlen=min(len(self.bannedWord),len(self.newCategories[i][0]))
+                if self.bannedWord[0:minlen]!=self.newCategories[i][0][0:minlen].lower():
                     self.newCategories[i]=self.newCategories[i][0]+'(p)'
                 else:
                     self.newCategories[i]=self.newCategories[i][0]
