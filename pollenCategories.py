@@ -45,7 +45,7 @@ class pollenCategories(QDialog):
             
                 
             
-            self.newCategories[i]=self.newCategories[i].lower().split('(p')
+            self.newCategories[i]=self.newCategories[i].split('(p')
             self.items.append(QListWidgetItem(self.newCategories[i][0], self.listed))
             
             self.items[i].setFlags(self.items[i].flags() | Qt.ItemIsUserCheckable)
