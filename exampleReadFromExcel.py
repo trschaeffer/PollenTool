@@ -98,6 +98,7 @@ def toList(ws,orientation,isP):
         dates=[]
         categories=[]
         data=[]
+        #special code for .xls files, cannot be reused/ mixed with .xlsx
         for i in range(1,ws.nrows):
             if(i>1):
                 date=xlrd.xldate_as_tuple(ws.cell(i,0).value,0)
@@ -118,37 +119,35 @@ def toList(ws,orientation,isP):
         
         
         return categories,data,dates
-               
-                    
-                
-                    
-                
-                
-    
+    #.xlsx code which can handle multiple different format
     categories=[]
     listdata=[]
     alldata=(tuple(alldata))
     
-    #separate datapoints from categories
+    #separate data from categories
     for row in tuple(alldata)[1:]:
         data=[]
         for cell in row[1:]:
             data.append(cell.value)
         #print(data)
         if(row[0].value!=None):
+            #if the user wants the (p) in the file, set isP to true
+            #typically used in backend functions
             if(isP):
                 categories.append(row[0].value)
             else:
-                
+            #otherwise the (p) is filtered out so the user cannot see it. 
+            #typically used in frontend functions
                 categories.append(row[0].value.split('(p')[0])
             listdata.append(data.copy())
-            
+    #establish dates list        
     dates=[]
     daterow=alldata[0][1:]
     
     #create a list of all the dates
     for date in daterow:
         if(date.value!=None):
+            #if date is written out as months, date is converted to a datetype
             if(dateType(date.value)==1):
                 date=monthToDate(year,date.value)
             else:
@@ -188,7 +187,7 @@ def dateType(value):
 #this function finds empty categories or empty dates and removes 
 #takes in the main data set, returns processed data set    
 def filter(categories,data,dates):  
-    
+    #remove all -, --, and 'nan from the data.  This is used to represent nothing
     filterReport=''
     for i in range(0,len(data)):
         for j in range(0,len(data[0])):
@@ -196,7 +195,7 @@ def filter(categories,data,dates):
                 if ('-'== str(data[i][j]) or '--' == str(data[i][j]) or str(data[i][j])=='nan'):
                     data[i][j]=None
                     
-                    
+    #check if there is data in every category                
     i=0
     removedCount=0
     for category in categories:
@@ -214,7 +213,7 @@ def filter(categories,data,dates):
         i+=1
     remove=True
     removedCount=0
-    
+    #check if there is data in every date
     for i in range(0,len(dates)):
         remove=True
         for j in range(0,len(data)):
@@ -278,6 +277,8 @@ def loadDataWithP(fileName):
       categories,data,dates=[[],[],[]]  
       
     return (categories,data,dates)
+#brute force changing pollen category names, only used by the view/edit pollen
+#categories button
 def rewriteCategories(categories,fileName):
     data=loadDataWithP(fileName)
     
@@ -297,20 +298,29 @@ def toMainSpreadSheet(categories,datas,dates,filename):
     #grab the active worksheet
     newCats=[]
     mergeReport=""
+    #prepare dates for merging
     for i in range(0,len(datas)):
         
         mainDates,datas[i],mainData,assimilateReport=assimilate(datas[i],dates,mainDates,mainData)
         mergeReport+=assimilateReport
+        #prepares categories for merging
     for i in range(0,len(categories)):
         add=True
-        for j in range(0,len(mainC)):
+        for j in range(0,len(mainC)): 
+            #checks if there are matching categories
             minlen=min(len(categories[i]),len(mainC[j].split('(p')[0]))
+            #if shortest category is less than 4 in length, compare literally
+            #our collaborator uses abbreviations of 4 letters, anything below is
+            #not an abbreviation. prevents merging of NO2, NO, NOx
             if(minlen<4):
                 minlen=4
             if categories[i][0:minlen].lower()==mainC[j].split('(p')[0][0:minlen].lower():
+                #special case for total pollen category so that
+                #it is always replaced by newer data
                 if categories[i][0:minlen].lower()=='total pollen':
                     mainData[j],updatedDataIndex=datas[i],[]
                 else:
+                    #proper array merge using helper
                     mainData[j],updatedDataIndex=mergeArray(datas[i],mainData[j])
                 mergeReport+="\nMerging data in category "+categories[i]+" into "+mainC[j]
                 
@@ -319,24 +329,26 @@ def toMainSpreadSheet(categories,datas,dates,filename):
                     mergeReport+="\n Overwriting data in category "+mainC[j]+" at time "+str(mainDates[updatedDataIndex[k]])+" with "+str(datas[i][updatedDataIndex[k]]) 
                 add=False
         if(add):
+            #if there is no matching category, append it to the end
             mergeReport+= "\nCreating new Category: "+categories[i]
-            
+            #we use newcats so that the category dialogue can ask which are 
+            #a pollen category
             newCats.append(categories[i])
             
             mainData.append(datas[i])
-            for j in range(0,len(mainData[0])):
-                if (mainData[-1][j]!=None):
-                    #mergeReport+="\nNew data "+ str(mainData[-1][j])+" in category "+ newCats[-1] +" at time "+ str(mainDates[j])
-                    pass
-    if len(newCats)>0 and not (newCats[0]=='Total Pollen' and len(newCats)==1):      
+    #checking that we are not performing the total pollen merge from button,
+    #asking user if this is a pollen category would be stupid and ignored        
+    if len(newCats)>0 and not (newCats[0]=='Total Pollen' and len(newCats)==1):  
+        #runs pollen category generator
         ex = pollenCategories(newCats)
         ex.show()
         if(ex.exec_()):
             for cat in ex.newCategories:
                 mainC.append(cat)
-       
+    #if it is the total pollen merge from button, just append without asking   
     elif len(newCats)>0:
         mainC.append(newCats[0])
+    #save the file
     mainSpreadSheet=toWs(mainC,mainData,mainDates,mainSpreadSheet)
     wb.save(filename)
     return (mergeReport)

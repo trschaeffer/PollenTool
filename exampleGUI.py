@@ -163,23 +163,24 @@ class tabs(QTabWidget):
                 for y in categories:
                     x.addItem(y)
         def setPollenCategories():
-           
-                categories=RFE.loadDataWithP("master.xlsx")[0]
-                try:
-                    self.data[0]==[]
-                    1/len(categories)
-                except:
-                    self.throwError('Master file has not been loaded. Click "load master" or "browse files" to load master file')
-                
+            #allows user to access the checkboxes for which categories are pollen type
+            #maybe we should run sum_pollen after this one
+            categories=RFE.loadDataWithP("master.xlsx")[0]
+            try:
+                self.data[0]==[]
+                1/len(categories)
+            except:
+                self.throwError('Master file has not been loaded. Click "load master" or "browse files" to load master file')
+        
                     
                 
-                else:
-                    ex = pollenCategories(categories)
-                    ex.show()
-                    if(ex.exec_()):
-                        RFE.rewriteCategories(ex.newCategories,'master.xlsx')
-                    new_data.setText("Categories updated")
-            
+            else:
+                ex = pollenCategories(categories)
+                ex.show()
+                if(ex.exec_()):
+                    RFE.rewriteCategories(ex.newCategories,'master.xlsx')
+                new_data.setText("Categories updated")
+        
                 
         def load():
             self.data=RFE.loadData(self.masterFileName)
@@ -191,6 +192,7 @@ class tabs(QTabWidget):
             
             
         def sum_pollen():
+            #adds all pollen types together into one category, total pollen
             try:
                 report=RFE.calcTotalPollen('master.xlsx')
                 new_data.setText(report)
@@ -200,7 +202,10 @@ class tabs(QTabWidget):
 
 
         def send_email():
-            #get today's data, email it
+            #get today's data, email it.  Not implemented
+            #able to send gmails with .xlsx attachments, but not doing anything useful
+            #currently
+            
             #some function to filter by today's date
             #RFE.toNewSpreadSheet(categories, data, dates, filename)
             #gmail.send_message_from_GUI("trschaeffer@wpi.edu", "Subject", "Hello! here is the pollen data for today",filename)

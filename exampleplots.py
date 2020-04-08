@@ -38,6 +38,7 @@ def boxplot(raw_arr,raw_days,name,regressions,axies,future):
             if raw_arr[j][i]!=None: 
                 array1 = np.append(array1, raw_arr[j][i])
                 days1 = np.append(days1, raw_days[j][i])
+        #get regression type as number
         if(regressions[j]=='Polynomial'):
             order=2
         if(regressions[j]=='Linear'):
@@ -199,7 +200,7 @@ def arrayvstime2(raw_arr,raw_days,names,regressions,axies,future):
                 if(future==-1 or future<dates1[-1]):
                     future=int(dates1[-1]+1)
                 a=np.polyfit(datesRegress,array1,order)       #calculates nth order regression 
-                b=np.polyfit(dates1,array1,order)
+                b=np.polyfit(dates1,array1,order)       #calculates nth order regression
                 if order==1:
                     equation='m='+str(round(a[0],2))+'/year, b='+str(round(a[1],2))
                 else:
@@ -246,7 +247,8 @@ def arrayvstime2(raw_arr,raw_days,names,regressions,axies,future):
             # axes up to make room for them
      # format the ticks
     dateRange=dateMax-dateMin
-    locator=mdates.AutoDateLocator(minticks=6, maxticks=None)
+    #auto locators/formatters very useful for making the graphs look good and scaled properly
+    locator=mdates.AutoDateLocator(minticks=6, maxticks=None) 
     minorLocator=mdates.AutoDateLocator(minticks=30, maxticks=48)
     formatter = mdates.AutoDateFormatter(locator)
     ax.xaxis.set_major_locator(locator)
@@ -271,7 +273,8 @@ def draw_plot(data, j,lenj,edge_color, fill_color,labels,ax):
     positions=labels.copy()
     k=.5
     for i in range(len(positions)):
-        
+        #formula to set positions of boxplots to be offset so that they can be centered
+        #around a year tick but not on top of eachother
         positions[i]=positions[i]+(((j+1)/lenj)-.5-(.5/lenj))*k
     print(labels)
     bp = ax.boxplot(data, widths=0.4/lenj, patch_artist=True,positions=positions,manage_ticks=False)
@@ -283,6 +286,7 @@ def draw_plot(data, j,lenj,edge_color, fill_color,labels,ax):
         patch.set(facecolor=fill_color)
     return bp
 def seperateByYear(data, dates):
+    #seperates data into years for the boxplotting to handle
     deltay=mdates.num2date(dates[-1]).year-mdates.num2date(dates[0]).year
     i=0
     j=-1
@@ -307,6 +311,7 @@ def seperateByYear(data, dates):
     return array,labels
         
 def loessregression(x,y):
+    #basic loess regression code
     lowess_sm = sm.nonparametric.lowess
     yest_sm = lowess_sm(y,x,frac=1./3.,it=3, return_sorted = False)
     return yest_sm
