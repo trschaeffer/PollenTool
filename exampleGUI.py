@@ -57,7 +57,7 @@ class tabs(QTabWidget):
         self.tab3UI()
         
         #Titles the window
-        self.setWindowTitle("Data Analysis Tool")
+        self.setWindowTitle("Data Analysis Tool- Copyright WPI, 2020")
         self.setGeometry(100, 100, 775 ,550)
         
     #creates error box to prevent the user from crashing the program
