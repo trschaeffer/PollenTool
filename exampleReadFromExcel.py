@@ -189,7 +189,7 @@ def dateType(value):
 #this function finds empty categories or empty dates and removes 
 #takes in the main data set, returns processed data set    
 def filter(categories,data,dates): 
-    print(dates)
+    
     #remove all -, --, and 'nan from the data.  This is used to represent nothing
     filterReport=''
     for i in range(0,len(data)):
