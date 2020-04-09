@@ -152,8 +152,10 @@ def toList(ws,orientation,isP):
                 date=monthToDate(year,date.value)
             else:
                 date=date.value.date()
-            
             dates.append(date)
+        else:
+            dates.append(None)
+       
     
     return categories, listdata, dates
 
@@ -186,7 +188,8 @@ def dateType(value):
 
 #this function finds empty categories or empty dates and removes 
 #takes in the main data set, returns processed data set    
-def filter(categories,data,dates):  
+def filter(categories,data,dates): 
+    print(dates)
     #remove all -, --, and 'nan from the data.  This is used to represent nothing
     filterReport=''
     for i in range(0,len(data)):
@@ -194,7 +197,10 @@ def filter(categories,data,dates):
             if(data[i][j]!=None):
                 if ('-'== str(data[i][j]) or '--' == str(data[i][j]) or str(data[i][j])=='nan'):
                     data[i][j]=None
-                    
+                try:
+                    int(data[i][j])
+                except:
+                    data[i][j]=None
     #check if there is data in every category                
     i=0
     removedCount=0

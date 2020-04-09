@@ -1,4 +1,4 @@
-1. anaconda console open, cd to workspace.
+1. anaconda prompt open, cd to workspace. all commands are typed into anaconda prompt
 2. >conda install pyinstaller
 3. must add hook-statsmodels.py to the folder: C:\Users\[user]\Anaconda3\pkgs\pyinstaller-3.6-py37h7602738_0\Lib\site-packages\PyInstaller\hooks
 4. add hook-pkg_resources.py to same folder, overwrite
