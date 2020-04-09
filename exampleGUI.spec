@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['exampleGUI.py'],
-             pathex=['C:\\Users\\Tobias\\Google Drive\\ID2050 personal\\PollenTool'],
+             pathex=['C:\\Users\\Tobias\\Google Drive\\ID2050 personal\\PollenTool\\pollentool'],
              binaries=[],
              datas=[],
              hiddenimports=["'pkg_resources.py2_warn", 'PyQt5.QtWidgets', 'PyQt5.QtGui', 'PyQt5.QtCore', 'sklearn.utils._cython_blas', 'sklearn.neighbors.typedefs', 'sklearn.neighbors.quad_tree', 'sklearn.tree._utils', 'statsmodels.tsa.statespace._kalman_filter', 'statsmodels.tsa.statespace._kalman_smoother', 'statsmodels.tsa.statespace._representation', 'statsmodels.tsa.statespace._simulation_smoother', 'statsmodels.tsa.statespace._statespace', 'statsmodels.tsa.statespace._tools', 'statsmodels.tsa.statespace._filters._conventional', 'statsmodels.tsa.statespace._filters._inversions', 'statsmodels.tsa.statespace._filters._univariate', 'statsmodels.tsa.statespace._filters._univariate_diffuse', 'statsmodels.tsa.statespace._smoothers._alternative', 'statsmodels.tsa.statespace._smoothers._classical', 'statsmodels.tsa.statespace._smoothers._conventional', 'statsmodels.tsa.statespace._smoothers._univariate', 'statsmodels.tsa.statespace._smoothers._univariate_diffuse'],
