@@ -222,11 +222,15 @@ def filter(categories,data,dates):
     #check if there is data in every date
     for i in range(0,len(dates)):
         remove=True
+        
+            
         for j in range(0,len(data)):
             
             
             if(data[j][i-removedCount]!=None):
                 remove=False
+        if dates[i]==None:
+            remove=True
         if(remove):
             
             filterReport+=("\nremoved date: "+str(dates[i-removedCount])+" because no data was found")
