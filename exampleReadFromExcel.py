@@ -229,7 +229,7 @@ def filter(categories,data,dates):
             
             if(data[j][i-removedCount]!=None):
                 remove=False
-        if dates[i]==None:
+        if dates[i-removedCount]==None:
             remove=True
         if(remove):
             
