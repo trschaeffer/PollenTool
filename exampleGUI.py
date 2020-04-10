@@ -147,6 +147,7 @@ class tabs(QTabWidget):
                 updateCategories() #add categories to drop-down menus
             except:
                 self.throwError("Error: No File Selected")
+                print(sys.exc_info()[0])
             
         def extractName(file):
             #separates the name of the file from its directory
@@ -196,7 +197,7 @@ class tabs(QTabWidget):
             try:
                 report=RFE.calcTotalPollen('master.xlsx')
                 new_data.setText(report)
-                updateCategories()
+                load()
             except:
                 self.throwError('Master file has not been loaded. Click "load master" or "browse files" to load master file')
 

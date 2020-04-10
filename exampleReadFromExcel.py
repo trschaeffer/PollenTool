@@ -189,7 +189,7 @@ def dateType(value):
 #this function finds empty categories or empty dates and removes 
 #takes in the main data set, returns processed data set    
 def filter(categories,data,dates): 
-    
+    print("removing any invalid data")
     #remove all -, --, and 'nan from the data.  This is used to represent nothing
     filterReport=''
     for i in range(0,len(data)):
@@ -204,6 +204,7 @@ def filter(categories,data,dates):
     #check if there is data in every category                
     i=0
     removedCount=0
+    print("removing empty categories")
     for category in categories:
         remove=True
         for point in data[i]:
@@ -219,13 +220,13 @@ def filter(categories,data,dates):
         i+=1
     remove=True
     removedCount=0
+    print("removing empty dates")
     #check if there is data in every date
     for i in range(0,len(dates)):
         remove=True
         
-            
         for j in range(0,len(data)):
-            
+                
             
             if(data[j][i-removedCount]!=None):
                 remove=False
@@ -241,7 +242,7 @@ def filter(categories,data,dates):
             
             removedCount+=1
         
-    
+    print("done filtering")
     return (categories,data,dates,filterReport)
 
 #this function will create a new spreadsheet populated with data from the given
