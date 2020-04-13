@@ -319,13 +319,13 @@ def toMainSpreadSheet(categories,datas,dates,filename):
         add=True
         for j in range(0,len(mainC)): 
             #checks if there are matching categories
-            minlen=min(len(categories[i]),len(mainC[j].split('(p')[0]))
+            minlen=min(len(categories[i].split('(p')[0]),len(mainC[j].split('(p')[0]))
             #if shortest category is less than 4 in length, compare literally
             #our collaborator uses abbreviations of 4 letters, anything below is
             #not an abbreviation. prevents merging of NO2, NO, NOx
             if(minlen<4):
                 minlen=4
-            if categories[i][0:minlen].lower()==mainC[j].split('(p')[0][0:minlen].lower():
+            if categories[i].split('(p')[0][0:minlen].lower()==mainC[j].split('(p')[0][0:minlen].lower():
                 #special case for total pollen category so that
                 #it is always replaced by newer data
                 if categories[i][0:minlen].lower()=='total pollen':
@@ -351,6 +351,7 @@ def toMainSpreadSheet(categories,datas,dates,filename):
     #asking user if this is a pollen category would be stupid and ignored        
     if len(newCats)>0 and not (newCats[0]=='Total Pollen' and len(newCats)==1):  
         #runs pollen category generator
+        print(newCats)
         ex = pollenCategories(newCats)
         ex.show()
         if(ex.exec_()):

@@ -133,7 +133,7 @@ class tabs(QTabWidget):
             try:
                 self.file_name.setText('File imported: ' + extractName(file))
                 ws = RFE.readFile(file)
-                raw_data = RFE.toList(ws,RFE.findOrientation(ws),False)
+                raw_data = RFE.toList(ws,RFE.findOrientation(ws),True)
                 self.data = RFE.filter(raw_data[0], raw_data[1], raw_data[2])
             
                 filterText="\nFilter Report\n\n"+self.data[3]
