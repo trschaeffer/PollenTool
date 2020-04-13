@@ -78,6 +78,7 @@ class tabs(QTabWidget):
         hbox1.addWidget(browse_btn)
         hbox1.addWidget(load_btn)
         
+        #Show status of data entry
         self.file_name = QLabel('<u>No data has been loaded</u>')
         
         #Create input fields
@@ -87,7 +88,7 @@ class tabs(QTabWidget):
         #creates dropdown menu for categories
         self.cbox = QComboBox()
         
-        #horizontally align buttons and input fields
+        #align buttons and input fields for manual data entry
         labelDE = QLabel('<b>Manual Data Point Entry</b>')
         labelDE.setAlignment(Qt.AlignCenter)
         formDE = QFormLayout()
@@ -123,27 +124,31 @@ class tabs(QTabWidget):
         vbox.addLayout(hbox3)
         self.tab1.setLayout(vbox)
 
-        #Browse user's computer for excel files, create new if none selected
+        #Browse user's computer for excel files
         def openFileNameDialog():
             options = QFileDialog.Options()
             options |= QFileDialog.DontUseNativeDialog
             new_data.setText("loading data...")
             file, _ = QFileDialog.getOpenFileName(self,"QFileDialog.getOpenFileName()", "","All Files (*);;Excel (*.xlsx)")
-            #xw.Book(file)
+            
+            #if the user does not select a file, catch error to prevent crashing
             try:
+                #update user status of data imported
                 self.file_name.setText('File imported: ' + extractName(file))
+
+                #read in the data from the imported file
                 ws = RFE.readFile(file)
                 raw_data = RFE.toList(ws,RFE.findOrientation(ws),False)
                 self.data = RFE.filter(raw_data[0], raw_data[1], raw_data[2])
-            
                 filterText="\nFilter Report\n\n"+self.data[3]
                 new_data.setText(filterText+"\n Please See other window to continue")
-                #Update master file
+                
+                #Update master file and "new data added" box
                 if extractName(file) != 'master.xlsx': 
                     mergetext=RFE.toMainSpreadSheet(self.data[0], self.data[1].copy(),self.data[2],self.masterFileName)
                     new_data.setText("Merge Report \n\n"+mergetext+filterText)
               
-                self.data=RFE.loadData(self.masterFileName)
+                self.data=RFE.loadData(self.masterFileName) #read in master
                 updateCategories() #add categories to drop-down menus
             except:
                 self.throwError("Error: No File Selected")
@@ -156,13 +161,13 @@ class tabs(QTabWidget):
             return name
         
         def updateCategories():
-            #Adds headers for data categories to dropdown menus
-            #self.data=RFE.loadData(self.masterFileName)
+            #Adds headers for data categories to all dropdown menus
             categories = self.data[0]
             for x in [self.cbox, self.cat1, self.cat2, self.c1,self.c2,self.c3,self.c4,self.c5,self.c6]:
                 x.clear()
                 for y in categories:
                     x.addItem(y)
+                    
         def setPollenCategories():
             #allows user to access the checkboxes for which categories are pollen type
             #maybe we should run sum_pollen after this one
@@ -172,8 +177,6 @@ class tabs(QTabWidget):
                 1/len(categories)
             except:
                 self.throwError('Master file has not been loaded. Click "load master" or "browse files" to load master file')
-        
-                    
                 
             else:
                 ex = pollenCategories(categories)
@@ -182,15 +185,14 @@ class tabs(QTabWidget):
                     RFE.rewriteCategories(ex.newCategories,'master.xlsx')
                 new_data.setText("Categories updated")
         
-                
         def load():
+            #read in master file when "load master" is clicked
             self.data=RFE.loadData(self.masterFileName)
             if self.data[0] != []:
-                updateCategories()
+                updateCategories() #update dropdown menus
                 self.file_name.setText('File loaded: master.xlsx')
             else:
                 self.throwError('Master file has not been created. Click "Browse Files" and select a data file')
-            
             
         def sum_pollen():
             #adds all pollen types together into one category, total pollen
@@ -213,8 +215,8 @@ class tabs(QTabWidget):
             pass
         
         def add_datapoint():
+            #adds data point to master file using toMainSpreadSheet in readFromExcel
             try:
-                #adds data point to master file using toMainSpreadSheet in readFromExcel
                 data_pt=self.data_pt.text()
                 data_pt=int(data_pt)
                 if self.cbox.currentText() != '':
@@ -239,11 +241,9 @@ class tabs(QTabWidget):
 
 
     def tab2UI(self):        
-        #Dropdown menu for category for correlation
+        #Create and format dropdown menu for categories to correlate
         self.cat1 = QComboBox()
         self.cat2 = QComboBox()
-        
-        #formats the two categories next to eachother
         hbox0 = QHBoxLayout()
         hbox0.addWidget(QLabel('<b>Find Correlation Between:</b>'))
         hbox0.addWidget(self.cat1)
@@ -260,10 +260,8 @@ class tabs(QTabWidget):
         hbox1.addWidget(averagesbox)
         
         #Create options to select time period of data to correlate
-        #datecheck = QCheckBox('Filter data by specific dates (if checked, enter a range of dates below)')
         hbox2 = QHBoxLayout()
         datecheck = QCheckBox('Include data between the dates:')
-        #hbox2.addWidget(QLabel('Include data between the dates'))
         hbox2.addWidget(datecheck)
         date1 = QLineEdit('mm/dd/year')
         hbox2.addWidget(date1)
@@ -315,7 +313,9 @@ class tabs(QTabWidget):
         
         
         def calculate():
+            #Calculate correlation based on parameters entered by the user
             try:
+                #Find categories
                 if self.cat1.currentText() != '' and self.cat2.currentText() != '':
                     cat1_name = self.cat1.currentText()
                     cat2_name = self.cat2.currentText()
@@ -361,6 +361,7 @@ class tabs(QTabWidget):
             #Calculate spearman's correlation
             r,p = sp.calculatecoefficients(np.array(xdata), np.array(ydata))
             
+            #Color code correlation and p-value based on strength
             rText = QTableWidgetItem(str(round(r, 3)))
             if r >= 0.4 or r <= -0.4:
                 rText.setForeground(QBrush(QColor(0, 255, 0)))
@@ -372,13 +373,13 @@ class tabs(QTabWidget):
                 pText.setForeground(QBrush(QColor(0, 255, 0)))
             else:
                 pText.setForeground(QBrush(QColor(255, 99, 71)))
-                
+            
+            #print results to the UI table
             self.cor_results.insertRow(1)
             self.cor_results.setItem(1, 0, rText)
             self.cor_results.setItem(1, 1, pText)
             self.cor_results.setItem(1, 2, QTableWidgetItem(cat1_name))
-            self.cor_results.setItem(1, 3, QTableWidgetItem(cat2_name))
-            
+            self.cor_results.setItem(1, 3, QTableWidgetItem(cat2_name)) 
             if datecheck.isChecked() == True:
                 self.cor_results.setItem(1, 4, QTableWidgetItem(date1.text()))
                 self.cor_results.setItem(1, 5, QTableWidgetItem(date2.text()))
@@ -386,6 +387,7 @@ class tabs(QTabWidget):
                 self.cor_results.setItem(1, 6, QTableWidgetItem(averagesbox.currentText()))
             
         def calculateAverages(raw_xdata, raw_ydata, dates, way):
+            #calculate monthly or yearly averages based on user input
             i=0
             prevd=0
             listxdates=[]
@@ -450,6 +452,7 @@ class tabs(QTabWidget):
             return xdata, ydata
                 
         def avg(datalist):
+            #helper function for calculating averages
             sumData=0
             size=len(datalist)
             for x in datalist:
@@ -457,11 +460,11 @@ class tabs(QTabWidget):
                     sumData+=x
                 else:
                     size = size - 1
-                    
             average=sumData/size
             return average
         
         def dateFilter(raw_xdata, raw_ydata):
+            #Filter data by the date range entered by the user
             if date1.text() != '' and date2.text() != '':
                 #Extract the dates from user input field and make datetime.date format
                 start_date = date1.text().split('/')
@@ -472,7 +475,7 @@ class tabs(QTabWidget):
             xdata=[]
             ydata=[]
             dates=[]
-            #filter datapoints based on date range input by user
+            #return data only within the desired range of dates
             for t in range(len(self.data[2])):
                 if self.data[2][t] >= start_date and self.data[2][t] <= end_date:
                     xdata.append(raw_xdata[t])
@@ -481,6 +484,7 @@ class tabs(QTabWidget):
             return xdata, ydata, dates
         
         def saveResults():
+            #save all results from the table in the correlation tab to Excel
             headings=[]
             dates=[]
             datas=[]
@@ -495,16 +499,18 @@ class tabs(QTabWidget):
                 datas.append(data)
             for d in range (1, self.cor_results.rowCount()):
                 dates.append(d)
-            RFE.toNewSpreadSheet(headings, datas, dates, self.saveFileName.text() + '.xlsx')
-            self.throwError('File ' + self.saveFileName.text() + '.xlsx has been successfully saved to the "PollenTool" folder.')
-            
+            try:
+                #use toNewSpreadSheet to write data to Excel and save as name specified
+                RFE.toNewSpreadSheet(headings, datas, dates, self.saveFileName.text() + '.xlsx')
+                self.throwError('File ' + self.saveFileName.text() + '.xlsx has been successfully saved to the "PollenTool" folder.')
+            except:
+                self.throwError('File name cannot contain "." or "/"')
         
         #assign function to calculate button
         calc_btn.clicked.connect(calculate)
         save_btn.clicked.connect(saveResults)
         
-        #Titles the tab
-        self.setTabText(1, "Calculations")
+        self.setTabText(1, "Calculations") #Titles the tab
         
     def tab3UI(self):
         #Dropdown menu for graph x-variable
@@ -516,15 +522,14 @@ class tabs(QTabWidget):
         self.c6=QComboBox()
         cArr=[self.c1,self.c2,self.c3,self.c4,self.c5,self.c6]
        
+         #Create fields for category options
         self.numBox=QComboBox()
         for i in range(1,7):
             self.numBox.addItem(str(i))
-        
         HBoxIterate=[]
         axisNum=[]
         regressionType=[]
-       
-        for i in range(0, 6):
+        for i in range(0, 6):  #Poplulate dropdown menus
             regressionType.append(QComboBox())
             axisNum.append(QComboBox())
             regressionType[i].addItem('None')
@@ -538,15 +543,8 @@ class tabs(QTabWidget):
         hboxT.addWidget(QLabel('<b># of Categories to Graph:</b>'))
         create_spaces = QPushButton('Generate Category Options')
         update_spaces = QPushButton('Update Category #')
-        
         hboxT.addWidget(self.numBox)
         hboxT.addWidget(create_spaces)
-        #Arranges drop-downs for variables next to each other
-        hbox1 = QHBoxLayout()
-        """hbox1.addWidget(QLabel('category:'))
-        hbox1.addWidget(self.xvar)
-        hbox1.addWidget(QLabel('Axis #'))
-        hbox1.addWidget(self.yvar)"""
         
         #Create options to calculate average of year or month
         averagesbox = QComboBox()
@@ -562,7 +560,6 @@ class tabs(QTabWidget):
         hboxDates = QHBoxLayout()
         datecheck = QCheckBox('Include data between the dates:')
         hboxDates.addWidget(datecheck)
-        #hbox0.addWidget(QLabel('Include data between the dates'))
         date1 = QLineEdit('mm/dd/year')
         hboxDates.addWidget(date1)
         hboxDates.addWidget(QLabel('and'))
@@ -582,20 +579,13 @@ class tabs(QTabWidget):
         graphtype.addItem('Scatterplot')
         graphtype.addItem('Boxplot')
         graph_form.addRow('<b>Graph Style:</b>', graphtype)
-        #Check box to add linear regression model
-        #regcheck = QCheckBox('Plot Regression?')
-        #Horizontally align
         hboxGraphType = QHBoxLayout()
         hboxGraphType.addLayout(graph_form)
-        #hbox2.addWidget(regcheck)
         
         #Create graphing buttons
         generate_btn = QPushButton('Generate Graph')
-        #export_btn = QPushButton('Export Graph')
-        #Horizontally align graphing buttons
         hboxGenerate = QHBoxLayout()
         hboxGenerate.addWidget(generate_btn)
-        #hbox3.addWidget(export_btn)
         
         #sets the overall layout for the tab
         vbox1 = QVBoxLayout(self)
@@ -605,8 +595,6 @@ class tabs(QTabWidget):
         vbox1.addLayout(hboxGraphType)
         vbox1.addStretch(3)
         vbox1.addWidget(QLabel('<b>Optional Data Analysis Settings:</b>'))
-        vbox1.addStretch(0)
-        vbox1.addLayout(hbox1)
         vbox1.addStretch(0)
         vbox1.addLayout(hboxA)
         vbox1.addStretch(0)
@@ -681,15 +669,13 @@ class tabs(QTabWidget):
             datesArr=[dates]*len(raw_arr)
             arr=[None]*len(raw_arr)
             
-            #if the user wants to make future predictions to a certain year,
-            #this is the place to do it
+            #the user may want to make future predictions to a certain year
             if(futurecheck.isChecked()==True):
                 try:
                     future=int(futureYear.text())
                 except:
                     self.throwError('Year must be a number, such as 2030')
                     return None
-                
             else:
                 future=-1
             
@@ -706,7 +692,6 @@ class tabs(QTabWidget):
                     
             #If the user selects to calculate yearly or monthly averages
             # return x and y data in the form of averages using calculateAverages
-            
             if averagesbox.currentText() != 'None':
                 for i in range(len(raw_arr)):
                     arr[i], datesArr[i] = calculateAverages(raw_arr[i], datesArr[i], averagesbox.currentText())
@@ -715,6 +700,7 @@ class tabs(QTabWidget):
             else:
                 arr=raw_arr
             
+            #graph type indicated by the user
             if graphtype.currentText() == 'Scatterplot':
                 explots.arrayvstime2(arr,datesArr,cats,regressions,axies,future)
             if graphtype.currentText() == 'Boxplot':
@@ -751,7 +737,6 @@ class tabs(QTabWidget):
                     if way=='Months':
                         dates.append(date(d[0],d[1],1))
                    
-                    
                     if prevd != 0:
                         # calculate average for the previous year/month and add to list
                         # or add none if there is no data for that time period
@@ -767,7 +752,6 @@ class tabs(QTabWidget):
                         listdates=[]
                         
                     prevd=d
-                    
                 i+=1 
             
             #include average for the last time period once end of loop is reached
@@ -778,9 +762,9 @@ class tabs(QTabWidget):
                         
             #print(data, dates)
             return data, dates
-            
         
         def avg(datalist):
+            #helper function to calculate averages
             sumData=0
             size=len(datalist)
             for x in datalist:
@@ -808,9 +792,7 @@ class tabs(QTabWidget):
                     data.append(raw_data[t])
                     
                     dates.append(self.data[2][t])
-
             return data, dates
-            
         
         #Give function to the graphing button
         generate_btn.clicked.connect(graph)
