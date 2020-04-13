@@ -145,6 +145,7 @@ def arrayvstime2(raw_arr,raw_days,names,regressions,axies,future):
     everyOtherMonth=mdates.MonthLocator(interval=2)#every other month
     years_fmt = mdates.DateFormatter('%Y')
     months_fmt=mdates.DateFormatter('%m')
+
     #format future to date2num number so it can be used
     if(future!=-1):
         future=int(mdates.date2num(date(future,1,1)))
@@ -162,6 +163,7 @@ def arrayvstime2(raw_arr,raw_days,names,regressions,axies,future):
     dateMax=0
     colors=['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray', 'tab:olive', 'tab:cyan']
     for j in range(len(raw_arr)):
+        
         array1 = np.array([])
         days1 = np.array([])
         for i in range (np.size(raw_days[j])):
@@ -169,7 +171,7 @@ def arrayvstime2(raw_arr,raw_days,names,regressions,axies,future):
                 array1 = np.append(array1, raw_arr[j][i])
                 days1 = np.append(days1, raw_days[j][i])
         
-    
+        
         if(regressions[j]=='Polynomial'):
             order=2
         if(regressions[j]=='Linear'):
@@ -194,7 +196,7 @@ def arrayvstime2(raw_arr,raw_days,names,regressions,axies,future):
         #print(array1,dates1)
         if(axies[j]=='Left'):
             
-            l1, =ax.plot(dates1, array1,color=colors[j],label=names[j])#plots the line
+            l1, =ax.plot(dates1, array1,color=colors[j],label=names[j], marker='.')#plots the line
             legend.append(l1)  
             if(order==1 or order==2):
                 if(future==-1 or future<dates1[-1]):
@@ -224,7 +226,7 @@ def arrayvstime2(raw_arr,raw_days,names,regressions,axies,future):
         if(axies[j]=='Right'):   #creates axis on right
             color="tab:green"    #color of second y axis
             
-            l2,=ax2.plot(dates1,array1,color=colors[j],label=names[j])  #plots as scatter plot
+            l2,=ax2.plot(dates1,array1,color=colors[j],label=names[j], marker='.')  #plots as scatter plot
             legend.append(l2)
             if(order==1 or order==2):
                 a=np.polyfit(datesRegress,array1,order)       #calculates nth order regression 
