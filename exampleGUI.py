@@ -732,8 +732,9 @@ class tabs(QTabWidget):
                 
             if seasonS.text() != 'mm/dd' and seasonS.text() != '' and seasonE.text() != 'mm/dd' and seasonE.text() != '':
                 try:
-                    raw_arr[i], datesArr[i] = dateFilter(raw_arr[i], datesArr[i], 'season')
-                    #print (seasonS.text(), seasonE.text())
+                    for i in range(len(raw_arr)):
+                        raw_arr[i], datesArr[i] = dateFilter(raw_arr[i], datesArr[i], 'season')
+                        #print (seasonS.text(), seasonE.text())
                 except:
                     print("Invalid season entered. Dates must be in mm/dd form.")
                     
