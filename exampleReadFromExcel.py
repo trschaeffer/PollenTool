@@ -295,12 +295,13 @@ def loadDataWithP(fileName):
 def rewriteCategories(categories,fileName):
     dataSet=loadDataWithP(fileName)
     data=[]
-    
+    print("Removing pollen markers")
     for i in range(len(categories)):
         if(len(categories[i].split('(p'))==1):
             data.append(removePollen(dataSet[1][i]))
         else:
             data.append(dataSet[1][i])
+    print("Adding pollen markers")
     data=mergeZeroToPollen(categories,data)
     toNewSpreadSheet(categories,data,dataSet[2],fileName)
 #merges new dataset into the main spreadsheet
