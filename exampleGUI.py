@@ -361,11 +361,11 @@ class tabs(QTabWidget):
                     return None
             
             if seasonS.text() != 'mm/dd' and seasonS.text() != '' and seasonE.text() != 'mm/dd' and seasonE.text() != '':
-                #try:
-                raw_xdata, raw_ydata, dates = dateFilter(raw_xdata, raw_ydata, dates, 'season')
-                print (seasonS.text(), seasonE.text())
-                #except:
-                    #print("error")
+                try:
+                    raw_xdata, raw_ydata, dates = dateFilter(raw_xdata, raw_ydata, dates, 'season')
+                    #print (seasonS.text(), seasonE.text())
+                except:
+                    print("Invalid season entered. Dates must be in mm/dd form.")
                 
             #If the user selects to calculate yearly or monthly averages
             # return x and y data in the form of averages using calculateAverages
@@ -576,6 +576,14 @@ class tabs(QTabWidget):
         hboxT.addWidget(self.numBox)
         hboxT.addWidget(create_spaces)
         
+        seasonbox = QHBoxLayout()
+        seasonbox.addWidget(QLabel('Enter the pollen season dates:'))
+        seasonS = QLineEdit('mm/dd')
+        seasonbox.addWidget(seasonS)
+        seasonbox.addWidget(QLabel('to'))
+        seasonE = QLineEdit('mm/dd')
+        seasonbox.addWidget(seasonE)
+        
         #Create options to calculate average of year or month
         averagesbox = QComboBox()
         averagesbox.addItem('None')
@@ -625,6 +633,8 @@ class tabs(QTabWidget):
         vbox1.addLayout(hboxGraphType)
         vbox1.addStretch(3)
         vbox1.addWidget(QLabel('<b>Optional Data Analysis Settings:</b>'))
+        vbox1.addStretch(0)
+        vbox1.addLayout(seasonbox)
         vbox1.addStretch(0)
         vbox1.addLayout(hboxA)
         vbox1.addStretch(0)
@@ -714,11 +724,18 @@ class tabs(QTabWidget):
             if datecheck.isChecked() == True:
                 try:
                     for i in range(len(raw_arr)):
-                        raw_arr[i], datesArr[i] = dateFilter(raw_arr[i])
+                        raw_arr[i], datesArr[i] = dateFilter(raw_arr[i], datesArr[i], 'specific')
                 except:
                     self.throwError('Invalid dates entered. Dates must be in mm/dd/year format.'
                                 + ' Example: 1/1/2014 - 12/31/2019 will give all data from 2014-2019.')
                     return None
+                
+            if seasonS.text() != 'mm/dd' and seasonS.text() != '' and seasonE.text() != 'mm/dd' and seasonE.text() != '':
+                try:
+                    raw_arr[i], datesArr[i] = dateFilter(raw_arr[i], datesArr[i], 'season')
+                    #print (seasonS.text(), seasonE.text())
+                except:
+                    print("Invalid season entered. Dates must be in mm/dd form.")
                     
             #If the user selects to calculate yearly or monthly averages
             # return x and y data in the form of averages using calculateAverages
@@ -806,22 +823,28 @@ class tabs(QTabWidget):
             return average
         
         
-        def dateFilter(raw_data):
+        def dateFilter(raw_data, raw_dates, way):
             #Extract the dates from user input field and make datetime.date format
-            start_date = date1.text().split('/')
-            start_date = date(int(start_date[2]), int(start_date[0]), int(start_date[1]))
-            end_date = date2.text().split('/')
-            end_date = date(int(end_date[2]), int(end_date[0]), int(end_date[1]))
+            if way == 'specific':
+                start_date = date1.text().split('/')
+                start_date = date(int(start_date[2]), int(start_date[0]), int(start_date[1]))
+                end_date = date2.text().split('/')
+                end_date = date(int(end_date[2]), int(end_date[0]), int(end_date[1]))
            
             data=[]
             dates=[]
             
             #filter datapoints based on date range input by user
-            for t in range(len(self.data[2])):
-                if self.data[2][t] >= start_date and self.data[2][t] <= end_date:
-                    data.append(raw_data[t])
+            for t in range(len(raw_dates)):
+                if way == 'season':
+                    start_date = seasonS.text().split('/')
+                    start_date = date(raw_dates[t].year, int(start_date[0]), int(start_date[1]))
+                    end_date = seasonE.text().split('/')
+                    end_date = date(raw_dates[t].year, int(end_date[0]), int(end_date[1]))
                     
-                    dates.append(self.data[2][t])
+                if raw_dates[t] >= start_date and raw_dates[t] <= end_date:
+                    data.append(raw_data[t])
+                    dates.append(raw_dates[t])
             return data, dates
         
         #Give function to the graphing button
