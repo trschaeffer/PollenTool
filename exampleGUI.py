@@ -180,6 +180,8 @@ class tabs(QTabWidget):
                 ex.show()
                 if(ex.exec_()):
                     RFE.rewriteCategories(ex.newCategories,'master.xlsx')
+                load()
+                
                 new_data.setText("Categories updated")
         
                 
