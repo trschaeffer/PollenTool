@@ -138,7 +138,7 @@ class tabs(QTabWidget):
 
                 #read in the data from the imported file
                 ws = RFE.readFile(file)
-                raw_data = RFE.toList(ws,RFE.findOrientation(ws),False)
+                raw_data = RFE.toList(ws,RFE.findOrientation(ws),True)
                 self.data = RFE.filter(raw_data[0], raw_data[1], raw_data[2])
                 filterText="\nFilter Report\n\n"+self.data[3]
                 new_data.setText(filterText+"\n Please See other window to continue")

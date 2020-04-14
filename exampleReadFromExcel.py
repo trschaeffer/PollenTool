@@ -298,6 +298,7 @@ def rewriteCategories(categories,fileName):
 #takes in dataset,saves file
 #could be modified to return merged data set if needed
 def toMainSpreadSheet(categories,datas,dates,filename):
+    print("loading master")
     try:
         wb = load_workbook(filename)
         mainSpreadSheet=wb.active
@@ -306,26 +307,29 @@ def toMainSpreadSheet(categories,datas,dates,filename):
         wb = Workbook()
         mainSpreadSheet=wb.active
         mainC,mainData,mainDates=[[],[],[]]
+        print("no master found, creating new master")
     #grab the active worksheet
     newCats=[]
     mergeReport=""
     #prepare dates for merging
+    print("adding dates to dataset")
     for i in range(0,len(datas)):
         
         mainDates,datas[i],mainData,assimilateReport=assimilate(datas[i],dates,mainDates,mainData)
         mergeReport+=assimilateReport
         #prepares categories for merging
+    print("finding categories to merge")
     for i in range(0,len(categories)):
         add=True
         for j in range(0,len(mainC)): 
             #checks if there are matching categories
-            minlen=min(len(categories[i]),len(mainC[j].split('(p')[0]))
+            minlen=min(len(categories[i].split('(p')[0]),len(mainC[j].split('(p')[0]))
             #if shortest category is less than 4 in length, compare literally
             #our collaborator uses abbreviations of 4 letters, anything below is
             #not an abbreviation. prevents merging of NO2, NO, NOx
             if(minlen<4):
                 minlen=4
-            if categories[i][0:minlen].lower()==mainC[j].split('(p')[0][0:minlen].lower():
+            if categories[i].split('(p')[0][0:minlen].lower()==mainC[j].split('(p')[0][0:minlen].lower():
                 #special case for total pollen category so that
                 #it is always replaced by newer data
                 if categories[i][0:minlen].lower()=='total pollen':
@@ -349,8 +353,10 @@ def toMainSpreadSheet(categories,datas,dates,filename):
             mainData.append(datas[i])
     #checking that we are not performing the total pollen merge from button,
     #asking user if this is a pollen category would be stupid and ignored        
+    print("prompting user for pollen categories")
     if len(newCats)>0 and not (newCats[0]=='Total Pollen' and len(newCats)==1):  
         #runs pollen category generator
+        
         ex = pollenCategories(newCats)
         ex.show()
         if(ex.exec_()):
@@ -362,6 +368,7 @@ def toMainSpreadSheet(categories,datas,dates,filename):
     #save the file
     mainSpreadSheet=toWs(mainC,mainData,mainDates,mainSpreadSheet)
     wb.save(filename)
+    print("saving master")
     return (mergeReport)
 #helper that merges two arrays of the same length together, returns result    
 def mergeArray(arr1,arr2):
