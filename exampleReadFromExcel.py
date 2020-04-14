@@ -365,12 +365,15 @@ def toMainSpreadSheet(categories,datas,dates,filename):
     #if it is the total pollen merge from button, just append without asking   
     elif len(newCats)>0:
         mainC.append(newCats[0])
+    #make the blanks in pollen categories 0
+    mainData=mergeZeroToPollen(mainC,mainData)
     #save the file
     mainSpreadSheet=toWs(mainC,mainData,mainDates,mainSpreadSheet)
     wb.save(filename)
     print("saving master")
     return (mergeReport)
 #helper that merges two arrays of the same length together, returns result    
+#array 1 takes priority over array 2
 def mergeArray(arr1,arr2):
     updatedDataIndex=[]
     for i in range(0,len(arr1)):
@@ -445,6 +448,12 @@ def calcTotalPollen(filename):
     report="Total Pollen per Day Calculated."
     report+=toMainSpreadSheet(["Total Pollen"],sums,dates,filename)
     return report
+def mergeZeroToPollen(categories, data):
+    for i in range(len(categories)):
+        if(len(categories[i].split('(p'))==2):
+            zArray=[0]*len(data[i])
+            data[i],=mergeArray(data[i],zArray)
+    return data
 
 """
 #read in new file
