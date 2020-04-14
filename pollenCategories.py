@@ -41,7 +41,7 @@ class pollenCategories(QDialog):
           
         
         vbox=QVBoxLayout()
-        
+        mainhBox=QHBoxLayout()
         
         
         for i in range(len(self.newCategories)):
@@ -70,7 +70,7 @@ class pollenCategories(QDialog):
         self.setGeometry(300, 300, 400, 450)
         self.setWindowTitle('Pollen Category selector')    
         self.show()
-        
+        #ALL CODE ADDED TO addP SHOULD ALSO BE ADDED TO closeEvent
         def addP():
             #when ok is clicked, check if each box is checked
             for i in range(self.listed.count()):

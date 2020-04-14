@@ -182,9 +182,18 @@ class tabs(QTabWidget):
                 ex = pollenCategories(categories)
                 ex.show()
                 if(ex.exec_()):
+                    new_data.setText("Categories updated. summing pollen.")
                     RFE.rewriteCategories(ex.newCategories,'master.xlsx')
+<<<<<<< HEAD
                 new_data.setText("Categories updated")
         
+=======
+                
+                
+               
+                sum_pollen()
+                
+>>>>>>> 1f6cae84ff27ff33f5582007ad3879ce92bce635
         def load():
             #read in master file when "load master" is clicked
             self.data=RFE.loadData(self.masterFileName)

@@ -135,11 +135,13 @@ def toList(ws,orientation,isP):
             #typically used in backend functions
             if(isP):
                 categories.append(row[0].value)
+                listdata.append(data.copy())
             else:
             #otherwise the (p) is filtered out so the user cannot see it. 
             #typically used in frontend functions
                 categories.append(row[0].value.split('(p')[0])
-            listdata.append(data.copy())
+                listdata.append(filterPollen(data.copy()))
+            
     #establish dates list        
     dates=[]
     daterow=alldata[0][1:]
@@ -291,9 +293,16 @@ def loadDataWithP(fileName):
 #brute force changing pollen category names, only used by the view/edit pollen
 #categories button
 def rewriteCategories(categories,fileName):
-    data=loadDataWithP(fileName)
+    dataSet=loadDataWithP(fileName)
+    data=[]
     
-    toNewSpreadSheet(categories,data[1],data[2],fileName)
+    for i in range(len(categories)):
+        if(len(categories[i].split('(p'))==1):
+            data.append(removePollen(dataSet[1][i]))
+        else:
+            data.append(dataSet[1][i])
+    data=mergeZeroToPollen(categories,data)
+    toNewSpreadSheet(categories,data,dataSet[2],fileName)
 #merges new dataset into the main spreadsheet
 #takes in dataset,saves file
 #could be modified to return merged data set if needed
@@ -365,18 +374,23 @@ def toMainSpreadSheet(categories,datas,dates,filename):
     #if it is the total pollen merge from button, just append without asking   
     elif len(newCats)>0:
         mainC.append(newCats[0])
+    #make the pollen categories 0 where there are blanks
+    mainData=mergeZeroToPollen(mainC,mainData)
     #save the file
     mainSpreadSheet=toWs(mainC,mainData,mainDates,mainSpreadSheet)
     wb.save(filename)
     print("saving master")
     return (mergeReport)
 #helper that merges two arrays of the same length together, returns result    
+#array 1 takes priority over array 2
 def mergeArray(arr1,arr2):
     updatedDataIndex=[]
     for i in range(0,len(arr1)):
         if(arr1[i]==arr2[i]):
             pass
         elif(arr1[i]==None):
+            arr1[i]=arr2[i]
+        elif(arr1[i]==-10000 and arr2[i]!=None):
             arr1[i]=arr2[i]
         else:
             updatedDataIndex.append(i)
@@ -435,17 +449,35 @@ def calcTotalPollen(filename):
     for j in range(len(dates)):
         isNone=True
         for i in range(0,pollenCats):
-            if(dataToSum[i][j]!=None):
+            if(dataToSum[i][j]!=None and dataToSum[i][j]!=-10000):
                 sums[0][j]+=dataToSum[i][j]
                 isNone=False
         if isNone:
-            sums[0][j]=None
+            sums[0][j]=0
+            #sums[0][j]=None
+            #depends how you want blank pollen data to be represented
        
     
     report="Total Pollen per Day Calculated."
     report+=toMainSpreadSheet(["Total Pollen"],sums,dates,filename)
     return report
-
+def mergeZeroToPollen(categories, data):
+    for i in range(len(categories)):
+        if(len(categories[i].split('(p'))==2):
+            zArray=[-10000]*len(data[i])
+            data[i]=mergeArray(data[i],zArray)[0]
+    return data
+def removePollen(data):
+    for i in range((len(data))):
+        if data[i]==-10000:
+            data[i]=None
+    return data
+def filterPollen(data):
+    for i in range((len(data))):
+        if data[i]==-10000:
+            data[i]=0
+    return data
+            
 """
 #read in new file
 ws=readFile('pollenData.xlsx')
