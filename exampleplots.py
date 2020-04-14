@@ -251,7 +251,7 @@ def arrayvstime2(raw_arr,raw_days,names,regressions,axies,future):
     dateRange=dateMax-dateMin
     #auto locators/formatters very useful for making the graphs look good and scaled properly
     locator=mdates.AutoDateLocator(minticks=6, maxticks=None) 
-    minorLocator=mdates.AutoDateLocator(minticks=30, maxticks=48)
+    minorLocator=mdates.AutoDateLocator(minticks=30, maxticks=80)
     formatter = mdates.AutoDateFormatter(locator)
     ax.xaxis.set_major_locator(locator)
     ax.xaxis.set_minor_locator(minorLocator)

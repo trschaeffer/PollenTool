@@ -743,6 +743,7 @@ class tabs(QTabWidget):
             if averagesbox.currentText() != 'None':
                 for i in range(len(raw_arr)):
                     arr[i], datesArr[i] = calculateAverages(raw_arr[i], datesArr[i], averagesbox.currentText())
+                    cats[i]=averagesbox.currentText()[:-1]+'ly average of'+cats[i]
             
             #If user does not choose to use optional data filtering, use raw data for calculations
             else:
