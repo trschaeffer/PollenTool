@@ -56,9 +56,13 @@ class tabs(QTabWidget):
         self.addTab(self.tab3, "Generate Graphs")
         self.tab3UI()
         
+        self.tab4 = QWidget()
+        self.addTab(self.tab4, "Help")
+        self.tab4UI()
+        
         #Titles the window
         self.setWindowTitle("Data Analysis Tool- Copyright WPI, 2020")
-        self.setGeometry(100, 100, 775 ,550)
+        self.setGeometry(100, 100, 775 ,600)
         
     #creates error box to prevent the user from crashing the program
     #msg is sent to them
@@ -239,8 +243,6 @@ class tabs(QTabWidget):
         add_btn.clicked.connect(add_datapoint)
         polleninfo_btn.clicked.connect(setPollenCategories)
         sum_btn.clicked.connect(sum_pollen)
-        
-        self.setTabText(0, "Data Entry") #Title the tab
 
 
     def tab2UI(self):        
@@ -252,25 +254,33 @@ class tabs(QTabWidget):
         hbox0.addWidget(self.cat1)
         hbox0.addWidget(QLabel('         and'))
         hbox0.addWidget(self.cat2)
-       
+        
+        seasonbox = QHBoxLayout()
+        seasonbox.addWidget(QLabel('Enter the pollen season dates:'))
+        seasonS = QLineEdit('mm/dd')
+        seasonbox.addWidget(seasonS)
+        seasonbox.addWidget(QLabel('to'))
+        seasonE = QLineEdit('mm/dd')
+        seasonbox.addWidget(seasonE)
+        
         #Create options to calculate average of year or month
         averagesbox = QComboBox()
         averagesbox.addItem('None')
         averagesbox.addItem('Years')
         averagesbox.addItem('Months')
-        hbox1 = QHBoxLayout()
-        hbox1.addWidget(QLabel('Calculate averages in the data across'))
-        hbox1.addWidget(averagesbox)
+        hboxA = QHBoxLayout()
+        hboxA.addWidget(QLabel('Calculate averages in the data across'))
+        hboxA.addWidget(averagesbox)
         
         #Create options to select time period of data to correlate
-        hbox2 = QHBoxLayout()
+        hboxdates = QHBoxLayout()
         datecheck = QCheckBox('Include data between the dates:')
-        hbox2.addWidget(datecheck)
+        hboxdates.addWidget(datecheck)
         date1 = QLineEdit('mm/dd/year')
-        hbox2.addWidget(date1)
-        hbox2.addWidget(QLabel('and'))
+        hboxdates.addWidget(date1)
+        hboxdates.addWidget(QLabel('and'))
         date2 = QLineEdit('mm/dd/year')
-        hbox2.addWidget(date2)
+        hboxdates.addWidget(date2)
         
         #Creates button to calculate correlation
         calc_form = QFormLayout()
@@ -285,27 +295,29 @@ class tabs(QTabWidget):
         saveHbox.addWidget(QLabel('.xlsx'))
         save_btn = QPushButton('Save to Excel')
         
-        
         #Creates table to publish correlation results
-        self.cor_results = QTableWidget(1,7)
+        self.cor_results = QTableWidget(1,8)
         self.cor_results.setItem(0,0,QTableWidgetItem('Correlation'))
         self.cor_results.setItem(0,1,QTableWidgetItem('p-value'))
         self.cor_results.setItem(0,2,QTableWidgetItem('Category 1'))
         self.cor_results.setItem(0,3,QTableWidgetItem('Category 2'))
-        self.cor_results.setItem(0,4,QTableWidgetItem('Start date'))
-        self.cor_results.setItem(0,5,QTableWidgetItem('End date'))
-        self.cor_results.setItem(0,6,QTableWidgetItem('Averages'))
+        self.cor_results.setItem(0,4,QTableWidgetItem('Season'))
+        self.cor_results.setItem(0,5,QTableWidgetItem('Start date'))
+        self.cor_results.setItem(0,6,QTableWidgetItem('End date'))
+        self.cor_results.setItem(0,7,QTableWidgetItem('Averages'))
     
         #sets the overall layout for the tab
         vbox1 = QVBoxLayout(self)
         vbox1.addLayout(hbox0)
+        vbox1.addStretch(0)
+        vbox1.addLayout(seasonbox)
         vbox1.addStretch(3)
         vbox1.addWidget(QLabel('<b>Optional Data Analysis Settings:</b>'))
         vbox1.addStretch(0)
-        vbox1.addLayout(hbox1)
+        vbox1.addLayout(hboxA)
         vbox1.addStretch(0)
         vbox1.addWidget(datecheck)
-        vbox1.addLayout(hbox2)
+        vbox1.addLayout(hboxdates)
         vbox1.addStretch(3)
         vbox1.addLayout(calc_form)
         vbox1.addWidget(QLabel('<b>Correlation Results</b>'))
@@ -313,7 +325,6 @@ class tabs(QTabWidget):
         vbox1.addLayout(saveHbox)
         vbox1.addWidget(save_btn)
         self.tab2.setLayout(vbox1)
-        
         
         def calculate():
             #Calculate correlation based on parameters entered by the user
@@ -343,11 +354,18 @@ class tabs(QTabWidget):
             # filter the data by these dates using dateFilter
             if datecheck.isChecked() == True:
                 try:
-                    raw_xdata, raw_ydata, dates = dateFilter(raw_xdata, raw_ydata)
+                    raw_xdata, raw_ydata, dates = dateFilter(raw_xdata, raw_ydata, dates, 'specific')
                 except:
                     self.throwError('Invalid dates entered. Dates must be in mm/dd/year format.'
                                 + ' Example: 1/1/2014 - 12/31/2019 will give all data from 2014-2019.')
                     return None
+            
+            if seasonS.text() != 'mm/dd' and seasonS.text() != '' and seasonE.text() != 'mm/dd' and seasonE.text() != '':
+                #try:
+                raw_xdata, raw_ydata, dates = dateFilter(raw_xdata, raw_ydata, dates, 'season')
+                print (seasonS.text(), seasonE.text())
+                #except:
+                    #print("error")
                 
             #If the user selects to calculate yearly or monthly averages
             # return x and y data in the form of averages using calculateAverages
@@ -382,12 +400,15 @@ class tabs(QTabWidget):
             self.cor_results.setItem(1, 0, rText)
             self.cor_results.setItem(1, 1, pText)
             self.cor_results.setItem(1, 2, QTableWidgetItem(cat1_name))
-            self.cor_results.setItem(1, 3, QTableWidgetItem(cat2_name)) 
+            self.cor_results.setItem(1, 3, QTableWidgetItem(cat2_name))
+            if seasonS.text() != 'mm/dd' and seasonE.text() != 'mm/dd':
+                season = seasonS.text() + ' - ' + seasonE.text()
+                self.cor_results.setItem(1, 4, QTableWidgetItem(season))
             if datecheck.isChecked() == True:
-                self.cor_results.setItem(1, 4, QTableWidgetItem(date1.text()))
-                self.cor_results.setItem(1, 5, QTableWidgetItem(date2.text()))
+                self.cor_results.setItem(1, 5, QTableWidgetItem(date1.text()))
+                self.cor_results.setItem(1, 6, QTableWidgetItem(date2.text()))
             if averagesbox.currentText() != 'None':
-                self.cor_results.setItem(1, 6, QTableWidgetItem(averagesbox.currentText()))
+                self.cor_results.setItem(1, 7, QTableWidgetItem(averagesbox.currentText()))
             
         def calculateAverages(raw_xdata, raw_ydata, dates, way):
             #calculate monthly or yearly averages based on user input
@@ -466,24 +487,31 @@ class tabs(QTabWidget):
             average=sumData/size
             return average
         
-        def dateFilter(raw_xdata, raw_ydata):
+        def dateFilter(raw_xdata, raw_ydata, raw_dates, way):
             #Filter data by the date range entered by the user
-            if date1.text() != '' and date2.text() != '':
-                #Extract the dates from user input field and make datetime.date format
-                start_date = date1.text().split('/')
-                start_date = date(int(start_date[2]), int(start_date[0]), int(start_date[1]))
-                end_date = date2.text().split('/')
-                end_date = date(int(end_date[2]), int(end_date[0]), int(end_date[1]))
+            if way == 'specific':
+                if date1.text() != '' and date2.text() != '':
+                    #Extract the dates from user input field and make datetime.date format
+                    start_date = date1.text().split('/')
+                    start_date = date(int(start_date[2]), int(start_date[0]), int(start_date[1]))
+                    end_date = date2.text().split('/')
+                    end_date = date(int(end_date[2]), int(end_date[0]), int(end_date[1]))
             
             xdata=[]
             ydata=[]
             dates=[]
             #return data only within the desired range of dates
-            for t in range(len(self.data[2])):
-                if self.data[2][t] >= start_date and self.data[2][t] <= end_date:
+            for t in range(len(raw_dates)):
+                if way == 'season':
+                    start_date = seasonS.text().split('/')
+                    start_date = date(raw_dates[t].year, int(start_date[0]), int(start_date[1]))
+                    end_date = seasonE.text().split('/')
+                    end_date = date(raw_dates[t].year, int(end_date[0]), int(end_date[1]))
+                    
+                if raw_dates[t] >= start_date and raw_dates[t] <= end_date:
                     xdata.append(raw_xdata[t])
                     ydata.append(raw_ydata[t])
-                    dates.append(self.data[2][t])
+                    dates.append(raw_dates[t])
             return xdata, ydata, dates
         
         def saveResults():
@@ -512,8 +540,7 @@ class tabs(QTabWidget):
         #assign function to calculate button
         calc_btn.clicked.connect(calculate)
         save_btn.clicked.connect(saveResults)
-        
-        self.setTabText(1, "Calculations") #Titles the tab
+
         
     def tab3UI(self):
         #Dropdown menu for graph x-variable
@@ -801,8 +828,16 @@ class tabs(QTabWidget):
         generate_btn.clicked.connect(graph)
         create_spaces.clicked.connect(createSlots)
         update_spaces.clicked.connect(updateSlots)
-        #Titles the tab
-        self.setTabText(2, "Generate Graphs")
+        
+        
+    def tab4UI(self):
+        example = QLabel()
+        example.setText('''<a href='https://www.youtube.com/'>youtube</a>''')
+        example.setOpenExternalLinks(True)
+        
+        vbox=QVBoxLayout(self)
+        vbox.addWidget(example)
+        self.tab4.setLayout(vbox)
 
 
 #Automatically launches the app when the program is run
