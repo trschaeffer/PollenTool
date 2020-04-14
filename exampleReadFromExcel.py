@@ -449,11 +449,13 @@ def calcTotalPollen(filename):
     for j in range(len(dates)):
         isNone=True
         for i in range(0,pollenCats):
-            if(dataToSum[i][j]!=None):
+            if(dataToSum[i][j]!=None and dataToSum[i][j]!=-10000):
                 sums[0][j]+=dataToSum[i][j]
                 isNone=False
         if isNone:
-            sums[0][j]=None
+            sums[0][j]=0
+            #sums[0][j]=None
+            #depends how you want blank pollen data to be represented
        
     
     report="Total Pollen per Day Calculated."
