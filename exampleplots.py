@@ -80,11 +80,11 @@ def boxplot(raw_arr,raw_days,name,regressions,axies,future):
         handles = bp["boxes"][0]
         #adds the handle to the legend
         legend.append(handles)
-        medians=[]
-        #retrieves medians of the boxplots, used for the regression
-        for line in bp["medians"]:
-            _,median=line.get_xydata()[1]
-            medians.append(median)
+        means=[]
+        #retrieves means of the boxplots, used for the regression
+        for line in bp["means"]:
+            _,mean=line.get_xydata()[1]
+            means.append(mean)
         #print(medians)
         #print(labels)
      
@@ -93,8 +93,8 @@ def boxplot(raw_arr,raw_days,name,regressions,axies,future):
         if(order==1 or order==2):
             if(future==-1 or labels[-1]>future):
                 future=labels[-1]
-            a=np.polyfit(labels,medians,order)       #calculates nth order regression 
-            b=np.polyfit(scaledLabels,medians,order) #calculates scaled boxplots so constants can be printed cleanly
+            a=np.polyfit(labels,means,order)       #calculates nth order regression 
+            b=np.polyfit(scaledLabels,means,order) #calculates scaled boxplots so constants can be printed cleanly
             if order==1:
                 equation='m='+str(round(b[0],2))+'/year, b='+str(round(b[1],2))
             else:
@@ -106,7 +106,7 @@ def boxplot(raw_arr,raw_days,name,regressions,axies,future):
             
             newName.append(regressions[j]+" regression of "+name[j]+": "+equation)
         elif(order==0):
-            loess=loessregression(labels,medians)   #performs loess regression
+            loess=loessregression(labels,means)   #performs loess regression
             l4, =reg.plot(labels,loess,color=colors[j],label="LOESS of"+name[j],linestyle='--') #plots loess
             legend.append(l4)
             newName.append("LOESS of "+name[j])
@@ -134,6 +134,8 @@ def boxplot(raw_arr,raw_days,name,regressions,axies,future):
     plt.xticks(range(minYear,maxYear+1))#x axis labeled with range of years
     ax.set_ylabel(left)   #set the axis label
     ax2.set_ylabel(right)  #set the axis label
+    ax2.set_title('Boxplot of '+str(name)+' \nDashed line is mean, solid is median')
+    ax.set_xlabel("Years")
     plt.show()
     ax.legend(legend,newName, loc=loc)
         #made to plot two lines on the same graph
@@ -269,7 +271,9 @@ def arrayvstime2(raw_arr,raw_days,names,regressions,axies,future):
         ax2.grid(True)
         ax2.set_ylabel(right)  #set the axis label
     plt.legend(handles=legend)     #creates legend\
-    plt.xlabel("Time")
+    ax2.set_title('Scatterplot of '+str(names))
+    ax.set_xlabel("Years")
+    
     plt.show()
 def draw_plot(data, j,lenj,edge_color, fill_color,labels,ax):
     positions=labels.copy()
@@ -279,10 +283,10 @@ def draw_plot(data, j,lenj,edge_color, fill_color,labels,ax):
         #around a year tick but not on top of eachother
         positions[i]=positions[i]+(((j+1)/lenj)-.5-(.5/lenj))*k
     print(labels)
-    bp = ax.boxplot(data, widths=0.4/lenj, patch_artist=True,positions=positions,manage_ticks=False)
+    bp = ax.boxplot(data, widths=0.4/lenj, patch_artist=True,positions=positions,manage_ticks=False, showmeans=True,meanline=True,whis=[2,98])
     
         
-    for element in ['boxes', 'whiskers', 'fliers', 'medians', 'caps']:
+    for element in ['boxes', 'whiskers', 'fliers','means' ,'medians', 'caps']:
         plt.setp(bp[element], color=edge_color)
     for patch in bp['boxes']:
         patch.set(facecolor=fill_color)
