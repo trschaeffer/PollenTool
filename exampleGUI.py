@@ -899,6 +899,10 @@ class tabs(QTabWidget):
         graphsave.setText('''<a href='https://youtu.be/PwZcpWxa-Lg'>How to save a graph</a>''')
         graphsave.setOpenExternalLinks(True)
         
+        guide = QLabel()
+        guide.setText('''<a href='https://docs.google.com/document/d/1FTMhJfqGYcq7x647V00lqRdfvlEVrG9LKunpnRkDKdU/edit?usp=sharing'>Click Here to View the Full User's Guide</a>''')
+        guide.setOpenExternalLinks(True)
+        
         vbox=QVBoxLayout(self)
         vbox.addWidget(QLabel('<b>The following link to tutorial videos if you need help with the tool:</b>'))
         vbox.addWidget(QLabel('Actions in the "Data Entry" Tab:'))
@@ -917,6 +921,8 @@ class tabs(QTabWidget):
         vbox.addWidget(graphregress)
         vbox.addWidget(graphregressext)
         vbox.addWidget(graphsave)
+        vbox.addStretch(0)
+        vbox.addWidget(guide)
         
         self.tab4.setLayout(vbox)
 
