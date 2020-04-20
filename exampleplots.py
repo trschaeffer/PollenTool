@@ -275,7 +275,7 @@ def arrayvstime2(raw_arr,raw_days,names,regressions,axies,future):
     plt.legend(handles=legend,bbox_to_anchor=(-0.05, .95, 1.1, .2), loc=1,
        ncol=2, mode="expand", borderaxespad=0.)    #creates legend\
     
-    ax.set_xlabel("Years")
+    ax.set_xlabel("Time")
     
     plt.show()
 def draw_plot(data, j,lenj,edge_color, fill_color,labels,ax):
