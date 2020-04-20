@@ -134,7 +134,7 @@ def boxplot(raw_arr,raw_days,name,regressions,axies,future):
     plt.xticks(range(minYear,maxYear+1))#x axis labeled with range of years
     ax.set_ylabel(left)   #set the axis label
     ax2.set_ylabel(right)  #set the axis label
-    ax2.set_title("Boxplot\n\n\n\n\n\n\n ")
+    
     ax.set_xlabel("Years")
     plt.show()
     plt.legend(legend,newName,bbox_to_anchor=(-0.05, .95, 1.1, .2), loc=1,
@@ -275,7 +275,7 @@ def arrayvstime2(raw_arr,raw_days,names,regressions,axies,future):
     plt.legend(handles=legend,bbox_to_anchor=(-0.05, .95, 1.1, .2), loc=1,
        ncol=2, mode="expand", borderaxespad=0.)    #creates legend\
     
-    ax.set_xlabel("Years")
+    ax.set_xlabel("Time")
     
     plt.show()
 def draw_plot(data, j,lenj,edge_color, fill_color,labels,ax):
