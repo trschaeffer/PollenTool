@@ -19,7 +19,7 @@ def boxplot(raw_arr,raw_days,name,regressions,axies,future):
     #array of colors, rotated through in order
     colors=['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray', 'tab:olive', 'tab:cyan']
     #initialize the plots, other variables
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(10,8))
     ax2=ax.twinx()
     legend=[]
     #categories on left axis
@@ -100,11 +100,11 @@ def boxplot(raw_arr,raw_days,name,regressions,axies,future):
             else:
                 equation='a='+str(round(b[0],2))+'/year^2, b='+str(round(b[1],2))+'/year, c='+str(round(b[2],2))
             #plots and adds the line of regression to the legend
-            l3,=reg.plot(np.linspace(labels[0],future,50),np.polyval(a,np.linspace(labels[0],future,50)),color=colors[j],label=(regressions[j]+" regression of "+name[j]+": "+equation),linestyle="--") #plots polynomial regression
+            l3,=reg.plot(np.linspace(labels[0],future,50),np.polyval(a,np.linspace(labels[0],future,50)),color=colors[j],label=(regressions[j]+" reg. of "+name[j]+": "+equation),linestyle="--") #plots polynomial regression
             legend.append(l3)
             
             
-            newName.append(regressions[j]+" regression of "+name[j]+": "+equation)
+            newName.append(regressions[j]+" reg. of "+name[j]+": "+equation)
         elif(order==0):
             loess=loessregression(labels,means)   #performs loess regression
             l4, =reg.plot(labels,loess,color=colors[j],label="LOESS of"+name[j],linestyle='--') #plots loess
@@ -134,11 +134,13 @@ def boxplot(raw_arr,raw_days,name,regressions,axies,future):
     plt.xticks(range(minYear,maxYear+1))#x axis labeled with range of years
     ax.set_ylabel(left)   #set the axis label
     ax2.set_ylabel(right)  #set the axis label
-    ax2.set_title('Boxplot of '+str(name)+' \nDashed line is mean, solid is median')
+    
     ax.set_xlabel("Years")
     plt.show()
-    ax.legend(legend,newName, loc=loc)
-        #made to plot two lines on the same graph
+    plt.legend(legend,newName,bbox_to_anchor=(-0.05, .95, 1.1, .2), loc=1,
+               ncol=2, mode="expand", borderaxespad=0.)
+               
+#made to plot two lines on the same graph
     
 def arrayvstime2(raw_arr,raw_days,names,regressions,axies,future):
     #formats for x labeling
@@ -155,7 +157,7 @@ def arrayvstime2(raw_arr,raw_days,names,regressions,axies,future):
     #categories for that day
     
         
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(10,8))
     ax2=ax.twinx()
     
     legend=[]
@@ -210,7 +212,7 @@ def arrayvstime2(raw_arr,raw_days,names,regressions,axies,future):
                 else:
                    
                     equation='a='+str(round(a[0],2))+'/year^2'+', b='+str(round(a[1],2))+'/year, c='+str(round(a[2],2))
-                l3,=ax.plot(np.append(dates1,range(int(dates1[-1])+1,future)),np.polyval(b,np.append(dates1,range(int(dates1[-1])+1,future))),color=colors[j],label=(regressions[j]+" regression of "+names[j]+": "+equation),linestyle='--') #plots polynomial regression
+                l3,=ax.plot(np.append(dates1,range(int(dates1[-1])+1,future)),np.polyval(b,np.append(dates1,range(int(dates1[-1])+1,future))),color=colors[j],label=(regressions[j]+" reg. of "+names[j]+": "+equation),linestyle='--') #plots polynomial regression
                 legend.append(l3)
             elif(order==0):
                 loess=loessregression(dates1,array1)   #performs loess regression
@@ -238,7 +240,7 @@ def arrayvstime2(raw_arr,raw_days,names,regressions,axies,future):
                 else:
                    
                     equation='a='+str(round(a[0],2))+'/year^2'+', b='+str(round(a[1],2))+'/year, c='+str(round(a[2],2))
-                l3,=ax.plot(np.append(dates1,range(int(dates1[-1])+1,future)),np.polyval(b,np.append(dates1,range(int(dates1[-1])+1,future))),color=colors[j],label=(regressions[j]+" regression of "+names[j]+": "+equation),linestyle='--') #plots polynomial regression
+                l3,=ax.plot(np.append(dates1,range(int(dates1[-1])+1,future)),np.polyval(b,np.append(dates1,range(int(dates1[-1])+1,future))),color=colors[j],label=(regressions[j]+" reg. of "+names[j]+": "+equation),linestyle='--') #plots polynomial regression
                 legend.append(l3)
             elif(order==0):
                 loess=loessregression(dates1,array1)   #performs loess regression
@@ -270,8 +272,9 @@ def arrayvstime2(raw_arr,raw_days,names,regressions,axies,future):
     if(right!=''):
         ax2.grid(True)
         ax2.set_ylabel(right)  #set the axis label
-    plt.legend(handles=legend)     #creates legend\
-    ax2.set_title('Scatterplot of '+str(names))
+    plt.legend(handles=legend,bbox_to_anchor=(-0.05, .95, 1.1, .2), loc=1,
+       ncol=2, mode="expand", borderaxespad=0.)    #creates legend\
+    
     ax.set_xlabel("Years")
     
     plt.show()
