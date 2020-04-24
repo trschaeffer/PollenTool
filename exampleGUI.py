@@ -61,7 +61,7 @@ class tabs(QTabWidget):
         self.tab4UI()
         
         #Titles the window
-        self.setWindowTitle("Data Analysis Tool- Copyright WPI, 2020")
+        self.setWindowTitle("The Correlation Machine- Copyright WPI, 2020")
         self.setGeometry(100, 100, 775 ,600)
         
     #creates error box to prevent the user from crashing the program
