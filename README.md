@@ -1,22 +1,18 @@
-# PollenTool
+# THE CORRELATION MACHINE
+copyright wpi,2020
 
-How to get working::::::
-1. Install anaconda3 to your computer. this will take a long time
-2. Install "git for windows to your computer":: this will be different on mac, should be the only step that is different
-use all default install settings
-3. Create github account
-3.5. Tell me your github account name so i can give you access
-4. Open git for windows
-5. Type >dir<
-into the terminal to see your working directory
-6. Use >cd [foldername]<
-to navigate the directory to get to the folder you want to have the project save to
-7. Type the line below into the git window 
->git clone https://github.com/trschaeffer/PollenTool.git<
-in the folder you want the project in
-8. open spyder, click project->new project
-8.5 check box for existing directory, type project name as PollenTool
-9. select the PollenTool folder that git should create in the folder you selected
-10. type !git pull origin master into the spyder terminal window 
-11. You should see the file hello.py and README.md pop up in the project explorer if all went right
+Authors Tobias Schaeffer, Jessica Kelly, 
+Deanna Kay, Tam Tuong
+
+Developed for Dr. Polliana Leru
+
+This tool is made to merge data from different xlsx formats into
+a single file easily
+
+It can then calculate correlation coefficients between categories of data
+It can also graph up to 6 data sets on one graph.
+
+For more detailed instructions on how to use, 
+download and run "correlation machine.exe" and go to
+the help tab
 
