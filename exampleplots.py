@@ -240,7 +240,7 @@ def arrayvstime2(raw_arr,raw_days,names,regressions,axies,future):
                 else:
                    
                     equation='a='+str(round(a[0],2))+'/year^2'+', b='+str(round(a[1],2))+'/year, c='+str(round(a[2],2))
-                l3,=ax.plot(np.append(dates1,range(int(dates1[-1])+1,future)),np.polyval(b,np.append(dates1,range(int(dates1[-1])+1,future))),color=colors[j],label=(regressions[j]+" reg. of "+names[j]+": "+equation),linestyle='--') #plots polynomial regression
+                l3,=ax2.plot(np.append(dates1,range(int(dates1[-1])+1,future)),np.polyval(b,np.append(dates1,range(int(dates1[-1])+1,future))),color=colors[j],label=(regressions[j]+" reg. of "+names[j]+": "+equation),linestyle='--') #plots polynomial regression
                 legend.append(l3)
             elif(order==0):
                 loess=loessregression(dates1,array1)   #performs loess regression
