@@ -10,6 +10,7 @@ This tool is made to merge data from different xlsx formats into
 a single file easily
 
 It can then calculate correlation coefficients between categories of data
+
 It can also graph up to 6 data sets on one graph.
 
 For more detailed instructions on how to use, 
